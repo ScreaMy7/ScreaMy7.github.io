@@ -11,7 +11,7 @@ tags: [JS,BB,javascript]
 2. My workflow for finding js files 
 3. inspecting the files
 4. some reports
-5. about new tool in future and next writeup
+5. about new tool in progress and next writeup
 
 # JS files
 
