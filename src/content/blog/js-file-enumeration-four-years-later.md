@@ -3,7 +3,7 @@ title: "JS file enumeration, four years later: recon with LLMs"
 description: "A follow-up to my 2022 post on reading JavaScript for bug bounty. Single-page apps ship their whole attack surface in the bundle — here's how to collect it, cut it down, and let an LLM do the reading without burning your token budget or trusting a word it says."
 pubDate: 2026-10-02
 tags: [bug-bounty, javascript, llm, recon]
-draft: true
+draft: false
 ---
 
 Four and a half years ago I wrote [JS file enumeration for bug bounty hunters](/blog/js-file-enumeration-for-bug-bounty-hunters/). The short version: reading JavaScript is tedious, most hunters skip it, and that's exactly why it pays. I promised a part two about old JS files, webpack bundles, and a tool I was building.
