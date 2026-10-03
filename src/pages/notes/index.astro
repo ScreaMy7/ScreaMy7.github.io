@@ -4,9 +4,10 @@ import PostList from '../../components/PostList.astro';
 import { getItems } from '../../lib/content';
 
 const items = await getItems('notes');
+// noindex until the first note is published, so search engines don't index an empty page.
 ---
 
-<Base title="Notes" description="Short snippets, one-liners and things I learned.">
+<Base title="Notes" description="Short snippets, one-liners and things I learned." noindex={items.length === 0}>
   <h1>Notes</h1>
   <p class="muted">Short snippets, one-liners and things I learned.</p>
   <PostList items={items} empty="No notes yet." />

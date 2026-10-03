@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import Post from '../../layouts/Post.astro';
-import { getPublished, readingMinutes } from '../../lib/content';
+import { excerpt, getPublished, readingMinutes } from '../../lib/content';
 
 export async function getStaticPaths() {
   const entries = await getPublished('notes');
@@ -12,6 +12,13 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 ---
 
-<Post section="notes" id={entry.id} {...entry.data} minutes={readingMinutes(entry.body)} headings={headings}>
+<Post
+  section="notes"
+  id={entry.id}
+  {...entry.data}
+  excerpt={excerpt(entry.body)}
+  minutes={readingMinutes(entry.body)}
+  headings={headings}
+>
   <Content />
 </Post>

@@ -46,16 +46,19 @@ Own images are resized and converted to WebP automatically at build time. Use 12
 | Card spotlight + 3D tilt, scroll reveal, reading progress, TOC highlight, copy buttons, theme toggle | `public/js/site.js` |
 | Page transitions (cover morphs from card into post) | CSS View Transitions in `src/styles/global.css` (no JS; Chrome/Edge/Safari; other browsers navigate normally) |
 | Generated covers | `src/lib/cover.ts`, `src/components/GeneratedCover.astro` |
+| Share images (og:image PNG per post, `/og/…`) | `src/lib/og.ts`, `src/pages/og/[...slug].png.ts` |
 
 All motion is switched off for visitors with "reduce motion" enabled in their OS.
 
 Research posts: only publish when the issue is fixed **and** the program/vendor allows disclosure.
 
-**Research and Notes are currently hidden** (only Blog is live). To bring them back:
+**Research is currently hidden** (Blog and Notes are live). To bring it back:
 
-1. Rename `src/pages/_research` → `src/pages/research` and `src/pages/_notes` → `src/pages/notes`.
-2. Add them to `ENABLED_SECTIONS` in `src/lib/content.ts`.
-3. Add them back to `NAV` in `src/consts.ts`.
+1. Rename `src/pages/_research` → `src/pages/research`.
+2. Add it to `ENABLED_SECTIONS` in `src/lib/content.ts`.
+3. Add it back to `NAV` in `src/consts.ts`.
+
+Notes don't need a `description`: the meta description is taken from the opening of the note. The Notes page is `noindex` until the first note is published.
 
 ## Editing other things
 
@@ -74,5 +77,4 @@ GitHub Pages serves pages with `Cache-Control: max-age=600`, so a browser that a
 ## TODO (style pass)
 
 - Favicon (still a plain "S7" placeholder).
-- Open Graph images for link previews on LinkedIn/X (currently text-only cards).
 - HackerOne / X links in `src/consts.ts` (hidden until filled in).

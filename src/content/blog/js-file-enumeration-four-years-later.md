@@ -1,6 +1,6 @@
 ---
 title: "JS file enumeration, four years later: recon with LLMs"
-description: "A follow-up to my 2022 post on reading JavaScript for bug bounty. Single-page apps ship their whole attack surface in the bundle — here's how to collect it, cut it down, and let an LLM do the reading without burning your token budget or trusting a word it says."
+description: "Follow-up to my 2022 post: how to collect an SPA's JavaScript, cut it down, and let an LLM read it without burning tokens or trusting a word it says."
 pubDate: 2026-10-02
 tags: [bug-bounty, javascript, llm, recon]
 draft: false

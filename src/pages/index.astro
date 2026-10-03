@@ -4,7 +4,7 @@ import PostCard from '../components/PostCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getAllItems } from '../lib/content';
 import { projects } from '../data/projects';
-import { SITE } from '../consts';
+import { SITE, SOCIALS } from '../consts';
 
 const posts = (await getAllItems()).slice(0, 5);
 // Two-up grid: feature the newest post (full-width) only when the count is odd,
@@ -17,11 +17,27 @@ const stats = [
   { value: '$20k+', label: 'in bug bounties' },
   { value: 'OWASP', label: 'MASTG contributor' },
 ];
+const home = new URL('/', Astro.site).href;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', name: `${SITE.title} (${SITE.handle})`, url: home, description: SITE.description },
+    {
+      '@type': 'Person',
+      name: SITE.title,
+      alternateName: SITE.handle,
+      url: home,
+      jobTitle: 'Security researcher',
+      sameAs: SOCIALS.map((s) => s.href),
+    },
+  ],
+};
 const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engineering', 'bug bounty'];
 ---
 
 <Base wide>
   <script is:inline slot="head" src="/js/hero.js" defer></script>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <section class="hero">
     <canvas data-hero-canvas aria-hidden="true"></canvas>

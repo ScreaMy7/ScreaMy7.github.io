@@ -5,7 +5,8 @@ import Cover from '../components/Cover.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import TagList from '../components/TagList.astro';
 import Toc from '../components/Toc.astro';
-import { SECTION_LABEL, transitionName, type Section } from '../lib/content';
+import { ogImagePath, SECTION_LABEL, transitionName, type Section } from '../lib/content';
+import { SITE, SOCIALS } from '../consts';
 
 interface Advisory {
   vendor: string;
@@ -22,6 +23,8 @@ interface Props {
   id: string;
   title: string;
   description?: string;
+  /** Meta description when there is no written one (notes): the opening of the post. */
+  excerpt?: string;
   pubDate: Date;
   updatedDate?: Date;
   tags: string[];
@@ -40,6 +43,7 @@ const {
   id,
   title,
   description,
+  excerpt,
   pubDate,
   updatedDate,
   tags,
@@ -51,9 +55,42 @@ const {
   showCover = false,
   advisory,
 } = Astro.props;
+
+const metaDescription = description ?? (excerpt || undefined);
+const image = ogImagePath(section, id);
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: metaDescription,
+  url,
+  mainEntityOfPage: url,
+  image: new URL(image, Astro.site).href,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  keywords: tags,
+  author: {
+    '@type': 'Person',
+    name: SITE.title,
+    alternateName: SITE.handle,
+    url: new URL('/about/', Astro.site).href,
+    sameAs: SOCIALS.map((s) => s.href),
+  },
+};
 ---
 
-<Base title={title} description={description} type="article" wide>
+<Base
+  title={title}
+  description={metaDescription}
+  type="article"
+  image={image}
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  tags={tags}
+  wide
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <div slot="top" class="progress" aria-hidden="true"><span data-progress></span></div>
 
   <article class="post" data-article>
