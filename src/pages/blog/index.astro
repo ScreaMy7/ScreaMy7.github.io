@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getItems, tagSlug } from '../../lib/content';
+
+const items = await getItems('blog');
+const tags = [...new Set(items.flatMap((i) => i.tags))].sort();
+// Two-up grid: feature the newest post (full-width) only when the count is odd,
+// so the remaining posts always fill complete rows — no lonely trailing card.
+const featureFirst = items.length % 2 === 1;
+---
+
+<Base title="Blog" description="Posts on Android security, reverse engineering, fuzzing and bug bounty." wide>
+  <header class="page-head">
+    <p class="kicker" data-reveal>Blog</p>
+    <h1 data-reveal style="--d: 1">Notes from the <span class="grad-text">lab</span></h1>
+    <p class="muted" data-reveal style="--d: 2">
+      Methodology, tooling and writeups from mobile security, reverse engineering and bug bounty.
+    </p>
+    {
+      tags.length > 0 && (
+        <ul class="tags" data-reveal style="--d: 3">
+          {tags.map((t) => (
+            <li>
+              <a class="tag" href={`/tags/${tagSlug(t)}/`}>
+                #{t}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </header>
+
+  {
+    items.length === 0 ? (
+      <p class="empty">No posts yet.</p>
+    ) : (
+      <div class="grid">
+        {items.map((item, i) => (
+          <PostCard item={item} featured={featureFirst && i === 0} delay={i % 2} />
+        ))}
+      </div>
+    )
+  }
+</Base>
+
+<style>
+  .page-head {
+    max-width: 44rem;
+    margin-bottom: 3rem;
+  }
+
+  .page-head h1 {
+    margin: 0.4rem 0 0.75rem;
+  }
+
+  .page-head .muted {
+    margin: 0 0 1.25rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .grid > :global(.featured) {
+    grid-column: 1 / -1;
+  }
+</style>

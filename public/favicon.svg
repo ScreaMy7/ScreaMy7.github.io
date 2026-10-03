@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    rect { fill: #111214; }
+    text { fill: #e6e6e6; }
+    @media (prefers-color-scheme: dark) { rect { fill: #e6e6e6; } text { fill: #111214; } }
+  </style>
+  <rect width="32" height="32" rx="6"/>
+  <text x="16" y="21.5" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="700">S7</text>
+</svg>

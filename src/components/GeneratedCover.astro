@@ -1,0 +1,118 @@
+---
+import { makeCover, COVER_W, COVER_H } from '../lib/cover';
+
+interface Props {
+  title: string;
+  tags?: string[];
+}
+
+const { title, tags = [] } = Astro.props;
+const c = makeCover(title, tags);
+const accent = `hsl(${c.hue1} 95% 68%)`;
+const accent2 = `hsl(${c.hue2} 95% 70%)`;
+---
+
+<svg
+  viewBox={`0 0 ${COVER_W} ${COVER_H}`}
+  preserveAspectRatio="xMidYMid slice"
+  role="img"
+  aria-label={`Cover art for ${title}`}
+>
+  <defs>
+    <linearGradient id={`${c.uid}-bg`} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color={`hsl(${c.hue1} 55% 12%)`}></stop>
+      <stop offset="1" stop-color={`hsl(${c.hue2} 60% 7%)`}></stop>
+    </linearGradient>
+    {
+      c.glows.map((g, i) => (
+        <radialGradient id={`${c.uid}-g${i}`}>
+          <stop offset="0" stop-color={`hsl(${g.hue} 95% 60%)`} stop-opacity="0.55" />
+          <stop offset="1" stop-color={`hsl(${g.hue} 95% 60%)`} stop-opacity="0" />
+        </radialGradient>
+      ))
+    }
+    <linearGradient id={`${c.uid}-line`} x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color={accent}></stop>
+      <stop offset="1" stop-color={accent2}></stop>
+    </linearGradient>
+  </defs>
+
+  <rect width={COVER_W} height={COVER_H} fill={`url(#${c.uid}-bg)`}></rect>
+  {c.glows.map((g, i) => <circle cx={g.cx} cy={g.cy} r={g.r} fill={`url(#${c.uid}-g${i})`} />)}
+
+  {
+    c.pattern === 'network' && (
+      <g>
+        {c.edges.map((e) => (
+          <line x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} stroke={`url(#${c.uid}-line)`} stroke-opacity={e.o} stroke-width="1.5" />
+        ))}
+        {c.nodes.map((n) => (
+          <circle cx={n.x} cy={n.y} r={n.r} fill={accent} fill-opacity="0.85" />
+        ))}
+      </g>
+    )
+  }
+
+  {
+    c.pattern === 'hexdump' && (
+      <g font-family="ui-monospace, Menlo, monospace" font-size="26">
+        {c.hexRows.map((row) => (
+          <text x="60" y={row.y} fill="#ffffff" fill-opacity="0.22" xml:space="preserve">
+            {row.text}
+          </text>
+        ))}
+        {c.hexRows.flatMap((row) =>
+          row.hot.map((i) => (
+            <rect x={60 + (10 + i * 3) * 15.6 - 3} y={row.y - 24} width="37" height="32" rx="4" fill={accent} fill-opacity="0.35" />
+          ))
+        )}
+      </g>
+    )
+  }
+
+  {
+    c.pattern === 'radar' && (
+      <g>
+        {c.rings.map((ring) => (
+          <circle cx={c.center.x} cy={c.center.y} r={ring.r} fill="none" stroke={accent} stroke-opacity={ring.o} stroke-width="1.5" />
+        ))}
+        <line
+          x1={c.center.x}
+          y1={c.center.y}
+          x2={c.center.x + 700 * Math.cos((c.sweep * Math.PI) / 180)}
+          y2={c.center.y + 700 * Math.sin((c.sweep * Math.PI) / 180)}
+          stroke={accent2}
+          stroke-width="3"
+          stroke-opacity="0.9"
+        />
+        <circle cx={c.center.x} cy={c.center.y} r="7" fill={accent2} />
+      </g>
+    )
+  }
+
+  {
+    c.pattern === 'waves' && (
+      <g fill="none" stroke={`url(#${c.uid}-line)`} stroke-width="2">
+        {c.waves.map((w) => (
+          <path d={w.d} stroke-opacity={w.o} />
+        ))}
+      </g>
+    )
+  }
+
+  {
+    c.label && (
+      <text x="56" y={COVER_H - 48} font-family="ui-monospace, Menlo, monospace" font-size="34" font-weight="700" fill="#ffffff" fill-opacity="0.85">
+        {c.label}
+      </text>
+    )
+  }
+</svg>
+
+<style>
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, SOCIALS } from '../consts';
+import { contributions } from '../data/projects';
+---
+
+<Base title="About" description={`About ${SITE.title}, security researcher (${SITE.handle}).`}>
+  <p class="kicker" data-reveal>About</p>
+  <h1 data-reveal style="--d: 1">Aadarsh Anand <span class="grad-text">/ {SITE.handle}</span></h1>
+
+  <div class="prose">
+    <p>
+      I'm Aadarsh — <span class="mono">{SITE.handle}</span> to most of the internet, a handle left
+      over from my CS:GO days. I break mobile apps for a living and for fun: by day a security
+      researcher at Appknox, the rest of the time a bug bounty hunter, based in Bengaluru, India.
+    </p>
+    <p>
+      I work an Android app top to bottom — from decompiled Java/Kotlin down to the native
+      <code>.so</code> libraries most testers never open — with Frida, jadx and Ghidra, and I fuzz
+      JNI code with AFL++. Working both layers is where the interesting bugs tend to hide.
+    </p>
+
+    <h2>Currently</h2>
+    <p>
+      I'm focused on using AI to build security tooling — agents, fuzzing pipelines and benchmarks
+      that scale the slow, manual parts of mobile testing — and on finding and responsibly disclosing
+      vulnerabilities to make the apps people rely on a little safer.
+    </p>
+
+    <h2>Work</h2>
+    <p>
+      <strong>Security Researcher, Appknox</strong> <span class="muted">(Nov 2023 – present)</span><br
+      />
+      200+ end-to-end penetration tests across web, Android/iOS and API targets for enterprise clients
+      in BFSI, fintech and e-commerce — enough to start seeing the same vulnerability classes recur,
+      which is why I write Semgrep and Androguard rules so the scanning platform catches those patterns
+      automatically. Joined as an intern in June 2023 and converted to full-time.
+    </p>
+
+    <h2>Bug bounty</h2>
+    <ul>
+      <li>
+        $20,000+ in bounties for vulnerabilities responsibly disclosed to Adobe, Razorpay, AT&amp;T,
+        M&amp;T Bank and Ford.
+      </li>
+      <li>Hall of Fame recognition from Accenture, the United Nations and Palo Alto Networks.</li>
+      <li>Top 60 globally in H@cktivityCon 2021 CTF (web and mobile).</li>
+    </ul>
+
+    <h2>Open source</h2>
+    <ul>
+      {
+        contributions.map((c) => (
+          <li>
+            <a href={c.href}>{c.name}</a>: {c.description}
+          </li>
+        ))
+      }
+      <li>The tools I've built are on the <a href="/projects/">projects</a> page.</li>
+    </ul>
+
+    <p class="muted">
+      Day to day: Frida, jadx, Ghidra, Burp Suite, Semgrep, Androguard, Nuclei, AFL++ frida-mode and a
+      growing pile of LLM agents — mostly held together with Python and Bash.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      {SOCIALS.map((s) => <> · <a href={s.href} rel="me noopener">{s.label}</a></>)}
+    </p>
+    <p class="muted">
+      Reporting a vulnerability in something I maintain? See{' '}
+      <a href="/.well-known/security.txt">security.txt</a>.
+    </p>
+  </div>
+</Base>

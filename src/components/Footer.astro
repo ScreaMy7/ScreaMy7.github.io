@@ -1,0 +1,74 @@
+---
+import { SITE, SOCIALS } from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container wide inner">
+    <p class="sign mono">
+      <span class="grad-text">✦</span> built by {SITE.handle} · no trackers, no cookies
+    </p>
+    <ul class="links">
+      {SOCIALS.map((s) => <li><a href={s.href} rel="me noopener">{s.label}</a></li>)}
+      <li><a href={`mailto:${SITE.email}`}>Email</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+      <li><a href="/.well-known/security.txt">security.txt</a></li>
+    </ul>
+    <p class="muted copy">© {year} {SITE.title}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    margin-top: 6rem;
+    padding: 2.5rem 0 3rem;
+    font-size: 0.9rem;
+  }
+
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--grad);
+    opacity: 0.5;
+  }
+
+  .inner {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .sign {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .links a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--accent);
+  }
+
+  .copy {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+</style>

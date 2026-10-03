@@ -1,0 +1,79 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import { SECTION_LABEL, type Item } from '../lib/content';
+
+interface Props {
+  items: Item[];
+  showSection?: boolean;
+  empty?: string;
+}
+
+const { items, showSection = false, empty = 'Nothing here yet.' } = Astro.props;
+---
+
+{
+  items.length === 0 ? (
+    <p class="empty">{empty}</p>
+  ) : (
+    <ul class="post-list">
+      {items.map((item) => (
+        <li>
+          <div class="meta muted">
+            <FormattedDate date={item.date} />
+            {showSection && <span class="section mono">{SECTION_LABEL[item.section]}</span>}
+          </div>
+          <a class="title" href={item.href}>
+            {item.title}
+          </a>
+          {item.description && <p class="desc muted">{item.description}</p>}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .post-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-list li:first-child {
+    padding-top: 0;
+  }
+
+  .meta {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .section {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 0.1rem;
+  }
+
+  .title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .title:hover {
+    color: var(--accent);
+  }
+
+  .desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+  }
+</style>

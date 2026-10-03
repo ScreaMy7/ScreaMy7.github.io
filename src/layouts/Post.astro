@@ -1,0 +1,315 @@
+---
+import type { ImageMetadata, MarkdownHeading } from 'astro';
+import Base from './Base.astro';
+import Cover from '../components/Cover.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import TagList from '../components/TagList.astro';
+import Toc from '../components/Toc.astro';
+import { SECTION_LABEL, transitionName, type Section } from '../lib/content';
+
+interface Advisory {
+  vendor: string;
+  product: string;
+  affected?: string;
+  fixed?: string;
+  cve: string[];
+  severity?: string;
+  status: string;
+}
+
+interface Props {
+  section: Section;
+  id: string;
+  title: string;
+  description?: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags: string[];
+  draft: boolean;
+  minutes: number;
+  headings: MarkdownHeading[];
+  cover?: ImageMetadata;
+  coverAlt?: string;
+  /** Show a cover (generated if none is given). On for blog posts. */
+  showCover?: boolean;
+  advisory?: Advisory;
+}
+
+const {
+  section,
+  id,
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  tags,
+  draft,
+  minutes,
+  headings,
+  cover,
+  coverAlt,
+  showCover = false,
+  advisory,
+} = Astro.props;
+---
+
+<Base title={title} description={description} type="article" wide>
+  <div slot="top" class="progress" aria-hidden="true"><span data-progress></span></div>
+
+  <article class="post" data-article>
+    <header class="post-head">
+      <p class="crumb mono">
+        <a href={`/${section}/`}>← {SECTION_LABEL[section]}</a>
+        {draft && <span class="draft">DRAFT</span>}
+      </p>
+      <h1>{title}</h1>
+      {description && <p class="lede">{description}</p>}
+      <p class="meta mono">
+        <FormattedDate date={pubDate} />
+        <span aria-hidden="true">·</span>
+        <span>{minutes} min read</span>
+        {
+          updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>
+                updated <FormattedDate date={updatedDate} />
+              </span>
+            </>
+          )
+        }
+      </p>
+      <TagList tags={tags} />
+    </header>
+
+    {
+      showCover && (
+        <Cover
+          title={title}
+          tags={tags}
+          cover={cover}
+          coverAlt={coverAlt}
+          transition={transitionName(section, id)}
+          eager
+          class="post-cover"
+        />
+      )
+    }
+
+    <div class="post-grid">
+      <div class="post-main">
+        <Toc headings={headings} variant="mobile" />
+
+        {
+          advisory && (
+            <dl class="advisory">
+              <div>
+                <dt>Vendor</dt>
+                <dd>{advisory.vendor}</dd>
+              </div>
+              <div>
+                <dt>Product</dt>
+                <dd>{advisory.product}</dd>
+              </div>
+              {advisory.affected && (
+                <div>
+                  <dt>Affected</dt>
+                  <dd>{advisory.affected}</dd>
+                </div>
+              )}
+              {advisory.fixed && (
+                <div>
+                  <dt>Fixed in</dt>
+                  <dd>{advisory.fixed}</dd>
+                </div>
+              )}
+              {advisory.cve.length > 0 && (
+                <div>
+                  <dt>CVE</dt>
+                  <dd class="mono">
+                    {advisory.cve.map((cveId, i) => (
+                      <>
+                        {i > 0 && ', '}
+                        <a href={`https://www.cve.org/CVERecord?id=${cveId}`}>{cveId}</a>
+                      </>
+                    ))}
+                  </dd>
+                </div>
+              )}
+              {advisory.severity && (
+                <div>
+                  <dt>Severity</dt>
+                  <dd class={`sev sev-${advisory.severity}`}>{advisory.severity}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Status</dt>
+                <dd>{advisory.status}</dd>
+              </div>
+            </dl>
+          )
+        }
+
+        <div class="prose">
+          <slot />
+        </div>
+
+        <p class="end mono"><a href={`/${section}/`}>← back to {SECTION_LABEL[section].toLowerCase()}</a></p>
+      </div>
+
+      <aside class="post-aside">
+        <Toc headings={headings} variant="desktop" />
+      </aside>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  .progress span {
+    display: block;
+    height: 100%;
+    background: var(--grad);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .post-head,
+  .post :global(.post-cover) {
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .post-head {
+    margin-bottom: 2rem;
+  }
+
+  .crumb {
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .crumb a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .crumb a:hover {
+    color: var(--accent);
+  }
+
+  .draft {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin-bottom: 0.75rem;
+    font-size: clamp(2rem, 5vw, 3.1rem);
+  }
+
+  .lede {
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .post :global(.post-cover) {
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, var(--measure));
+    justify-content: center;
+    gap: 4rem;
+  }
+
+  /* 46rem text + 3rem gap + 13rem TOC, offset to align with the 56rem header: fits the 70rem container. */
+  @media (min-width: 1200px) {
+    .post-grid {
+      gap: 3rem;
+      grid-template-columns: minmax(0, var(--measure)) 13rem;
+      /* keep the text column aligned under the 56rem header */
+      margin-left: calc((100% - 56rem) / 2);
+      justify-content: start;
+    }
+  }
+
+  .post-aside {
+    display: none;
+  }
+
+  @media (min-width: 1200px) {
+    .post-aside {
+      display: block;
+    }
+  }
+
+  .end {
+    margin-top: 4rem;
+    font-size: 0.85rem;
+  }
+
+  .advisory {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem 1.5rem;
+    margin: 0 0 2.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+  }
+
+  .advisory dt {
+    font: 0.72rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .advisory dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .sev {
+    text-transform: capitalize;
+    font-weight: 600;
+  }
+
+  .sev-critical,
+  .sev-high {
+    color: #ef4444;
+  }
+
+  .sev-medium {
+    color: #f59e0b;
+  }
+</style>

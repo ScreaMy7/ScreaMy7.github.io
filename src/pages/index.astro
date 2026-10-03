@@ -1,0 +1,189 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getAllItems } from '../lib/content';
+import { projects } from '../data/projects';
+import { SITE } from '../consts';
+
+const posts = (await getAllItems()).slice(0, 5);
+// Two-up grid: feature the newest post (full-width) only when the count is odd,
+// so the rest fill complete rows with no lonely trailing card.
+const featureFirst = posts.length % 2 === 1;
+const featured = projects.filter((p) => p.featured);
+
+const stats = [
+  { value: '200+', label: 'penetration tests' },
+  { value: '$20k+', label: 'in bug bounties' },
+  { value: 'OWASP', label: 'MASTG contributor' },
+];
+const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engineering', 'bug bounty'];
+---
+
+<Base wide>
+  <script is:inline slot="head" src="/js/hero.js" defer></script>
+
+  <section class="hero">
+    <canvas data-hero-canvas aria-hidden="true"></canvas>
+    <div class="hero-inner">
+      <p class="kicker" data-reveal>Security researcher · {SITE.handle}</p>
+      <h1 data-reveal style="--d: 1">
+        Hi, I'm <span class="grad-text">Aadarsh</span>.<br />
+        I break Android apps and build the tools to do it.
+      </h1>
+      <p class="lede" data-reveal style="--d: 2">
+        Reverse engineering, native code and fuzzing. Security Researcher at Appknox and bug bounty
+        hunter.
+      </p>
+      <div class="cta" data-reveal style="--d: 3">
+        <a class="btn primary" href="/blog/">Read the blog <span aria-hidden="true">→</span></a>
+        <a class="btn" href="/projects/">See projects</a>
+      </div>
+      <ul class="chips" data-reveal style="--d: 4">
+        {focus.map((f) => <li>{f}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <ul class="stats">
+    {
+      stats.map((s, i) => (
+        <li data-reveal style={`--d: ${i}`}>
+          <span class="value grad-text">{s.value}</span>
+          <span class="label">{s.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="section-head" data-reveal>
+    <h2>Latest writing</h2>
+    <a href="/blog/">All posts →</a>
+  </div>
+  {
+    posts.length === 0 ? (
+      <p class="empty">First posts coming soon.</p>
+    ) : (
+      <div class="posts-grid">
+        {posts.map((item, i) => (
+          <PostCard item={item} featured={featureFirst && i === 0} delay={i % 2} />
+        ))}
+      </div>
+    )
+  }
+
+  <div class="section-head" data-reveal>
+    <h2>Things I've built</h2>
+    <a href="/projects/">All projects →</a>
+  </div>
+  <div class="grid">
+    {featured.map((p, i) => <ProjectCard project={p} delay={i % 2} />)}
+  </div>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    margin-top: -3rem;
+    padding: clamp(4rem, 12vh, 8rem) 0 4rem;
+    isolation: isolate;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0 -16px;
+    width: calc(100% + 32px);
+    height: 100%;
+    z-index: -1;
+    mask-image: radial-gradient(ellipse 75% 70% at 60% 45%, #000 35%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 70% at 60% 45%, #000 35%, transparent 80%);
+  }
+
+  .hero-inner {
+    max-width: 50rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.3rem, 6vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    margin: 0.6rem 0 1.25rem;
+  }
+
+  .lede {
+    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+    color: var(--muted);
+    max-width: 38rem;
+    margin: 0 0 2rem;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .chips li {
+    font: 0.8rem var(--font-mono);
+    color: var(--muted);
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-elev) 70%, transparent);
+    backdrop-filter: blur(6px);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem;
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stats li {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .value {
+    font: 700 2rem var(--font-head);
+    letter-spacing: -0.03em;
+  }
+
+  .label {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  /* Blog posts: wider cards (two-up), with the featured post spanning the row. */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .posts-grid > :global(.featured) {
+    grid-column: 1 / -1;
+  }
+
+  /* Project cards: tighter, three-up. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: 1.25rem;
+  }
+</style>

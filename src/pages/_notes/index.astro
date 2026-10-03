@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getItems } from '../../lib/content';
+
+const items = await getItems('notes');
+---
+
+<Base title="Notes" description="Short snippets, one-liners and things I learned.">
+  <h1>Notes</h1>
+  <p class="muted">Short snippets, one-liners and things I learned.</p>
+  <PostList items={items} empty="No notes yet." />
+</Base>

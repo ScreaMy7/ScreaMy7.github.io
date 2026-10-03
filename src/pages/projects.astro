@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projects, contributions } from '../data/projects';
+---
+
+<Base title="Projects" description="Security tools and open-source work by Aadarsh Anand." wide>
+  <header class="page-head">
+    <p class="kicker" data-reveal>Projects</p>
+    <h1 data-reveal style="--d: 1">Things I've <span class="grad-text">built</span></h1>
+    <p class="muted" data-reveal style="--d: 2">
+      Tools for mobile security, reverse engineering and fuzzing.
+    </p>
+  </header>
+
+  <div class="grid">
+    {projects.map((p, i) => <ProjectCard project={p} delay={i % 3} />)}
+  </div>
+
+  <div class="section-head" data-reveal>
+    <h2>Contributions</h2>
+  </div>
+  <div class="grid">
+    {
+      contributions.map((c, i) => (
+        <a class="contrib fx-card" href={c.href} data-reveal style={`--d: ${i}`}>
+          <strong>{c.name} <span aria-hidden="true">↗</span></strong>
+          <span class="muted">{c.description}</span>
+        </a>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    max-width: 44rem;
+    margin-bottom: 3rem;
+  }
+
+  .page-head h1 {
+    margin: 0.4rem 0 0.75rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .contrib {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.2rem 1.4rem;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .contrib strong {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+  }
+</style>

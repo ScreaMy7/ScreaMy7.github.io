@@ -1,0 +1,77 @@
+import { getCollection, type CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+
+export type Section = 'blog' | 'research' | 'notes';
+
+export const SECTION_LABEL: Record<Section, string> = {
+  blog: 'Blog',
+  research: 'Research',
+  notes: 'Note',
+};
+
+export interface Item {
+  section: Section;
+  id: string;
+  href: string;
+  title: string;
+  description?: string;
+  date: Date;
+  tags: string[];
+  minutes: number;
+  cover?: ImageMetadata;
+  coverAlt?: string;
+}
+
+const isVisible = ({ data }: { data: { draft: boolean } }) =>
+  import.meta.env.DEV || !data.draft;
+
+export async function getPublished<S extends Section>(section: S) {
+  const entries = (await getCollection(section, isVisible)) as CollectionEntry<S>[];
+  return entries.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+
+/** Rough reading time from the raw Markdown. */
+export function readingMinutes(body = '') {
+  const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
+export function toItem(section: Section, entry: CollectionEntry<Section>): Item {
+  const data = entry.data as CollectionEntry<Section>['data'] & {
+    cover?: ImageMetadata;
+    coverAlt?: string;
+  };
+  return {
+    section,
+    id: entry.id,
+    href: `/${section}/${entry.id}/`,
+    title: data.title,
+    description: data.description,
+    date: data.pubDate,
+    tags: data.tags,
+    minutes: readingMinutes(entry.body),
+    cover: data.cover,
+    coverAlt: data.coverAlt,
+  };
+}
+
+export async function getItems(section: Section): Promise<Item[]> {
+  return (await getPublished(section)).map((e) => toItem(section, e));
+}
+
+// Sections that are live. To re-enable Research/Notes: add them here, rename
+// src/pages/_research → research (and _notes → notes), and add them to NAV in consts.ts.
+export const ENABLED_SECTIONS: Section[] = ['blog'];
+
+/** Everything across enabled sections, newest first. */
+export async function getAllItems(): Promise<Item[]> {
+  const all = (await Promise.all(ENABLED_SECTIONS.map(getItems))).flat();
+  return all.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+}
+
+export const tagSlug = (tag: string) =>
+  tag.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** A CSS-safe view-transition-name, so a card's cover can morph into the post header. */
+export const transitionName = (section: Section, id: string) =>
+  `cover-${section}-${id.replace(/[^a-zA-Z0-9_-]/g, '-')}`;

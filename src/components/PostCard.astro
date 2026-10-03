@@ -1,0 +1,144 @@
+---
+import Cover from './Cover.astro';
+import FormattedDate from './FormattedDate.astro';
+import { transitionName, tagSlug, type Item } from '../lib/content';
+
+interface Props {
+  item: Item;
+  /** Large horizontal layout for the newest post. */
+  featured?: boolean;
+  delay?: number;
+}
+
+const { item, featured = false, delay = 0 } = Astro.props;
+---
+
+<article class:list={['post-card', 'fx-card', { featured }]} data-tilt data-reveal style={`--d: ${delay}`}>
+  <Cover
+    title={item.title}
+    tags={item.tags}
+    cover={item.cover}
+    coverAlt={item.coverAlt}
+    transition={transitionName(item.section, item.id)}
+    eager={featured}
+    class="card-cover"
+  />
+  <div class="body">
+    <p class="meta mono">
+      <FormattedDate date={item.date} />
+      <span aria-hidden="true">·</span>
+      <span>{item.minutes} min read</span>
+    </p>
+    <h3><a href={item.href} class="stretched">{item.title}</a></h3>
+    {item.description && <p class="desc">{item.description}</p>}
+    {
+      item.tags.length > 0 && (
+        <ul class="tags">
+          {item.tags.map((t) => (
+            <li>
+              <a class="tag" href={`/tags/${tagSlug(t)}/`}>
+                #{t}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .post-card :global(.card-cover) {
+    border-radius: 0;
+  }
+
+  /* Zoom the art inside the cover frame (the frame clips it). */
+  .post-card :global(.card-cover > *) {
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .post-card:hover :global(.card-cover > *) {
+    transform: scale(1.05);
+  }
+
+  .body {
+    padding: 1.1rem 1.25rem 1.3rem;
+    display: grid;
+    gap: 0.5rem;
+    background: var(--bg-elev);
+  }
+
+  .meta {
+    margin: 0;
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  h3 a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .post-card:hover h3 a {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Whole card is clickable via the title link; tags stay independently clickable (z-index 2). */
+  .stretched::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.97rem;
+    line-height: 1.6;
+  }
+
+  .tags {
+    margin-top: 0.25rem;
+  }
+
+  @media (min-width: 760px) {
+    .featured {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      align-items: stretch;
+    }
+
+    .featured :global(.card-cover) {
+      aspect-ratio: auto;
+      height: 100%;
+      min-height: 18rem;
+    }
+
+    .featured .body {
+      align-content: center;
+      padding: 2rem;
+    }
+
+    .featured h3 {
+      font-size: 1.7rem;
+    }
+  }
+</style>

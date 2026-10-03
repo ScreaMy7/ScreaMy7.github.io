@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getItems } from '../../lib/content';
+
+const items = await getItems('research');
+---
+
+<Base title="Research" description="Vulnerability writeups and advisories. Published only after the issue is fixed and disclosure is permitted.">
+  <h1>Research</h1>
+  <p class="muted">Vulnerability writeups and advisories. Published only after the issue is fixed and disclosure is permitted.</p>
+  <PostList items={items} empty="No published research yet." />
+</Base>

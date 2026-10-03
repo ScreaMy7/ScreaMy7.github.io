@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getAllItems, tagSlug } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const items = await getAllItems();
+  const byTag = new Map<string, { label: string; items: typeof items }>();
+  for (const item of items) {
+    for (const tag of item.tags) {
+      const slug = tagSlug(tag);
+      if (!byTag.has(slug)) byTag.set(slug, { label: tag, items: [] });
+      byTag.get(slug)!.items.push(item);
+    }
+  }
+  return [...byTag].map(([tag, { label, items }]) => ({ params: { tag }, props: { label, items } }));
+}
+
+const { label, items } = Astro.props;
+---
+
+<Base title={`#${label}`} description={`Posts tagged ${label}.`} wide>
+  <header class="page-head">
+    <p class="kicker"><a href="/blog/">← Blog</a></p>
+    <h1><span class="grad-text">#</span>{label}</h1>
+    <p class="muted">{items.length} {items.length === 1 ? 'post' : 'posts'}</p>
+  </header>
+  <div class="grid">
+    {items.map((item, i) => <PostCard item={item} delay={i % 3} />)}
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-head .kicker a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-head h1 {
+    margin: 0.4rem 0 0.25rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1.25rem;
+  }
+</style>
