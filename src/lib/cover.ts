@@ -44,10 +44,13 @@ export function makeCover(title: string, tags: string[] = []): CoverArt {
   const seed = hash(title);
   const r = rng(seed);
   const pattern = PATTERNS[seed % PATTERNS.length];
-  // Terminal-green family: greens, lime and teal. Kept in a narrow band so covers stay on-palette.
-  const HUES = [140, 128, 150, 160, 100, 168, 118, 135, 155];
+  // Warm family: orange through amber to gold, with mint as the occasional cool
+  // counterpoint. Narrow band so covers stay on-palette with the site accents.
+  const HUES = [22, 28, 35, 43, 18, 30, 40, 25, 165];
   const hue1 = HUES[Math.floor(r() * HUES.length)] + Math.floor(r() * 8);
-  const hue2 = (hue1 + 20 + Math.floor(r() * 45)) % 360;
+  // Second hue is either a nearby warm tone or the mint counterpoint — never the
+  // free +20..65 drift, which lands on yellow-green and reads olive.
+  const hue2 = r() < 0.35 ? 162 + Math.floor(r() * 10) : (hue1 + 8 + Math.floor(r() * 16)) % 360;
 
   const glows = Array.from({ length: 3 }, (_, i) => ({
     cx: r() * COVER_W,

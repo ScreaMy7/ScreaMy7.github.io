@@ -11,7 +11,7 @@
   var h = 0;
   var points = [];
   var mouse = { x: -9999, y: -9999 };
-  var colors = { a: '#a78bfa', b: '#22d3ee' };
+  var colors = { a: '#ff8a4c', b: '#6ee7c7' };
   var running = false;
   var onScreen = true;
   var raf = 0;

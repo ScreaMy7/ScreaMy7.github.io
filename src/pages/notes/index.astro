@@ -1,14 +1,84 @@
 ---
 import Base from '../../layouts/Base.astro';
-import PostList from '../../components/PostList.astro';
-import { getItems } from '../../lib/content';
+import PostRow from '../../components/PostRow.astro';
+import { getItems, tagSlug } from '../../lib/content';
 
 const items = await getItems('notes');
+const tags = [...new Set(items.flatMap((i) => i.tags))].sort();
 // noindex until the first note is published, so search engines don't index an empty page.
 ---
 
-<Base title="Notes" description="Short snippets, one-liners and things I learned." noindex={items.length === 0}>
-  <h1>Notes</h1>
-  <p class="muted">Short snippets, one-liners and things I learned.</p>
-  <PostList items={items} empty="No notes yet." />
+<Base
+  title="Notes"
+  description="Short pieces on how I work — agents, tooling and workflow."
+  noindex={items.length === 0}
+  wide
+>
+  <header class="page-head">
+    <p class="kicker" data-reveal>Notes</p>
+    <h1 data-reveal style="--d: 1">Short <span class="grad-text">notes</span></h1>
+    <p class="lede" data-reveal style="--d: 2">
+      One idea each: how I actually run agents, fuzzing and recon day to day. Longer writeups live on
+      the <a href="/blog/">blog</a>.
+    </p>
+    {
+      tags.length > 0 && (
+        <ul class="tags" data-reveal style="--d: 3">
+          {tags.map((t) => (
+            <li>
+              <a class="tag" href={`/tags/${tagSlug(t)}/`}>
+                #{t}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </header>
+
+  {
+    items.length === 0 ? (
+      <p class="empty">No notes yet.</p>
+    ) : (
+      <>
+        <div class="section-head" data-reveal>
+          <h2><span class="num" aria-hidden="true">01</span>All notes</h2>
+          <span class="count mono">{items.length} {items.length === 1 ? 'note' : 'notes'}</span>
+        </div>
+        <div class="rows">
+          {items.map((item, i) => (
+            <PostRow item={item} n={i + 1} delay={i % 2} />
+          ))}
+        </div>
+      </>
+    )
+  }
 </Base>
+
+<style>
+  .page-head {
+    max-width: 46rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-head h1 {
+    margin: 0.4rem 0 0.9rem;
+  }
+
+  .lede {
+    margin: 0 0 1.25rem;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  .count {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .rows {
+    border-bottom: 1px solid var(--border);
+  }
+</style>

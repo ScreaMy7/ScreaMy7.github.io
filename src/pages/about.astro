@@ -2,71 +2,190 @@
 import Base from '../layouts/Base.astro';
 import { SITE, SOCIALS } from '../consts';
 import { contributions } from '../data/projects';
+import { getAllItems } from '../lib/content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = (await getAllItems()).slice(0, 3);
+
+const toolkit = [
+  'Frida',
+  'jadx',
+  'Ghidra',
+  'Burp Suite',
+  'Semgrep',
+  'Androguard',
+  'Nuclei',
+  'AFL++ frida-mode',
+  'Nmap',
+  'Python',
+  'Bash',
+];
+
+// Classes I keep finding across engagements and bounties, not a catalogue of
+// everything that exists.
+const classes = [
+  'IDOR / BOLA',
+  'broken authorisation',
+  'insecure cryptography',
+  'IPC abuse',
+  'OWASP Top 10',
+  'MASVS / MASTG',
+];
+
+const bounty = [
+  {
+    label: '$20,000+',
+    detail:
+      'in bounties for vulnerabilities responsibly disclosed to Adobe, Razorpay, AT&T, M&T Bank and Ford.',
+  },
+  { label: 'Hall of Fame', detail: 'from Accenture, the United Nations and Palo Alto Networks.' },
+  { label: 'Top 60 globally', detail: 'in the H@cktivityCon 2021 CTF, web and mobile.' },
+];
 ---
 
-<Base title="About" description={`About ${SITE.title}, security researcher (${SITE.handle}).`}>
-  <p class="kicker" data-reveal>About</p>
-  <h1 data-reveal style="--d: 1">Aadarsh Anand <span class="grad-text">/ {SITE.handle}</span></h1>
-
-  <div class="prose">
-    <p>
-      I'm Aadarsh — <span class="mono">{SITE.handle}</span> to most of the internet, a handle left
-      over from my CS:GO days. I break mobile apps for a living and for fun: by day a security
-      researcher at Appknox, the rest of the time a bug bounty hunter, based in Bengaluru, India.
+<Base title="About" description={`About ${SITE.title}, security researcher (${SITE.handle}).`} wide>
+  <header class="page-head">
+    <p class="kicker" data-reveal>About</p>
+    <h1 data-reveal style="--d: 1">Aadarsh Anand <span class="grad-text">/ {SITE.handle}</span></h1>
+    <p class="lede" data-reveal style="--d: 2">
+      I'm <span class="mono">{SITE.handle}</span> to most of the internet, a handle left over from my
+      CS:GO days. I break mobile apps for a living and for fun: by day a security researcher at
+      Appknox, the rest of the time a bug bounty hunter, based in Bengaluru, India.
     </p>
-    <p>
-      I work an Android app top to bottom — from decompiled Java/Kotlin down to the native
-      <code>.so</code> libraries most testers never open — with Frida, jadx and Ghidra, and I fuzz
-      JNI code with AFL++. Working both layers is where the interesting bugs tend to hide.
-    </p>
+  </header>
 
-    <h2>Currently</h2>
-    <p>
-      I'm focused on using AI to build security tooling — agents, fuzzing pipelines and benchmarks
-      that scale the slow, manual parts of mobile testing — and on finding and responsibly disclosing
-      vulnerabilities to make the apps people rely on a little safer.
-    </p>
+  <div class="section-head" data-reveal>
+    <h2><span class="num" aria-hidden="true">01</span>How I work</h2>
+  </div>
+  <div class="block" data-reveal>
+    <div class="facet">
+      <h3>Mobile &amp; native</h3>
+      <p class="desc">
+        I work an Android app top to bottom — from decompiled Java/Kotlin down to the native
+        <code>.so</code> libraries most testers never open — with Frida, jadx and Ghidra, and I fuzz
+        JNI code with AFL++. Working both layers is where the interesting bugs tend to hide.
+      </p>
+    </div>
 
-    <h2>Work</h2>
-    <p>
-      <strong>Security Researcher, Appknox</strong> <span class="muted">(Nov 2023 – present)</span><br
-      />
-      200+ end-to-end penetration tests across web, Android/iOS and API targets for enterprise clients
-      in BFSI, fintech and e-commerce — enough to start seeing the same vulnerability classes recur,
-      which is why I write Semgrep and Androguard rules so the scanning platform catches those patterns
-      automatically. Joined as an intern in June 2023 and converted to full-time.
-    </p>
+    <div class="facet">
+      <h3>Web &amp; API</h3>
+      <p class="desc">
+        Mobile is half the job. The other half is the web and API surface those apps talk to, tested
+        against the OWASP Top 10 with Burp Suite, Nuclei and a lot of reading other people's
+        JavaScript — an SPA ships its route map, API calls and client-side permission checks straight
+        to the browser, and most testers skip it. Broken authorisation is what I find most: IDOR and
+        BOLA on endpoints the mobile client was never meant to expose. It's also where my bug bounty
+        work happens.
+      </p>
+    </div>
 
-    <h2>Bug bounty</h2>
-    <ul>
-      <li>
-        $20,000+ in bounties for vulnerabilities responsibly disclosed to Adobe, Razorpay, AT&amp;T,
-        M&amp;T Bank and Ford.
-      </li>
-      <li>Hall of Fame recognition from Accenture, the United Nations and Palo Alto Networks.</li>
-      <li>Top 60 globally in H@cktivityCon 2021 CTF (web and mobile).</li>
+    <div class="facet">
+      <h3>Tooling</h3>
+      <p class="desc">
+        When something is too slow to do by hand twice, I automate it: Semgrep and Androguard rules
+        so patterns get caught without me, and lately agents, fuzzing pipelines and benchmarks that
+        scale the slow parts of testing.
+      </p>
+    </div>
+
+    <p class="lbl mono">Classes I keep finding</p>
+    <ul class="toolkit">
+      {classes.map((c) => <li>{c}</li>)}
     </ul>
 
-    <h2>Open source</h2>
-    <ul>
+    <p class="lbl mono">Day to day</p>
+    <ul class="toolkit">
+      {toolkit.map((t) => <li>{t}</li>)}
+    </ul>
+  </div>
+
+  <div class="section-head" data-reveal>
+    <h2><span class="num" aria-hidden="true">02</span>Work</h2>
+  </div>
+  <div class="block" data-reveal>
+    <div class="role">
+      <h3>Security Researcher, Appknox</h3>
+      <span class="when mono">Nov 2023 – present</span>
+    </div>
+    <p class="desc">
+      200+ end-to-end penetration tests across web, Android/iOS and API targets for enterprise
+      clients in BFSI, fintech and e-commerce — enough to start seeing the same vulnerability classes
+      recur, which is why I write Semgrep and Androguard rules so the scanning platform catches those
+      patterns automatically. Joined as an intern in June 2023 and converted to full-time.
+    </p>
+    <p class="desc">
+      The part that isn't testing: I run remediation calls with client engineering teams, explain
+      root cause and the secure alternative, then validate the fix. A report nobody can act on hasn't
+      fixed anything.
+    </p>
+  </div>
+
+  <div class="section-head" data-reveal>
+    <h2><span class="num" aria-hidden="true">03</span>Bug bounty</h2>
+  </div>
+  <dl class="facts">
+    {
+      bounty.map((b, i) => (
+        <div class="fact" data-reveal style={`--d: ${i % 3}`}>
+          <dt>{b.label}</dt>
+          <dd>{b.detail}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <div class="section-head" data-reveal>
+    <h2><span class="num" aria-hidden="true">04</span>Open source</h2>
+  </div>
+  <div class="block" data-reveal>
+    <dl class="contribs">
       {
         contributions.map((c) => (
+          <>
+            <dt>
+              <a href={c.href}>
+                {c.name} <span aria-hidden="true">↗</span>
+              </a>
+            </dt>
+            <dd>{c.description}</dd>
+          </>
+        ))
+      }
+    </dl>
+    <p class="muted">
+      The tools I've built are on the <a href="/projects/">projects</a> page.
+    </p>
+  </div>
+
+  <div class="section-head" data-reveal>
+    <h2><span class="num" aria-hidden="true">05</span>Writing</h2>
+    <a href="/blog/">All posts →</a>
+  </div>
+  <div class="block" data-reveal>
+    <ul class="writing">
+      {
+        posts.map((p) => (
           <li>
-            <a href={c.href}>{c.name}</a>: {c.description}
+            <a href={p.href}>{p.title}</a>
+            <span class="when mono">
+              <FormattedDate date={p.date} />
+            </span>
           </li>
         ))
       }
-      <li>The tools I've built are on the <a href="/projects/">projects</a> page.</li>
     </ul>
-
     <p class="muted">
-      Day to day: Frida, jadx, Ghidra, Burp Suite, Semgrep, Androguard, Nuclei, AFL++ frida-mode and a
-      growing pile of LLM agents — mostly held together with Python and Bash.
+      Longer writeups on the <a href="/blog/">blog</a>; shorter pieces on how I work in{' '}
+      <a href="/notes/">notes</a>.
     </p>
+  </div>
 
-    <h2>Contact</h2>
-    <p>
-      Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+  <div class="section-head" data-reveal>
+    <h2><span class="num" aria-hidden="true">06</span>Contact</h2>
+  </div>
+  <div class="block" data-reveal>
+    <p class="contact">
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
       {SOCIALS.map((s) => <> · <a href={s.href} rel="me noopener">{s.label}</a></>)}
     </p>
     <p class="muted">
@@ -75,3 +194,194 @@ import { contributions } from '../data/projects';
     </p>
   </div>
 </Base>
+
+<style>
+  .page-head {
+    max-width: 46rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-head h1 {
+    margin: 0.4rem 0 0.9rem;
+  }
+
+  .lede {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .block {
+    border-top: 1px solid var(--border);
+    padding-top: 1.75rem;
+    max-width: 46rem;
+  }
+
+  .block :global(p) {
+    margin: 0 0 1rem;
+  }
+
+  .block :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Each facet of the work gets its own heading, so "web" isn't buried in prose. */
+  .facet {
+    margin-bottom: 1.6rem;
+  }
+
+  .facet h3 {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .lbl {
+    margin: 1.6rem 0 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
+  .toolkit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toolkit li {
+    font: 0.78rem var(--font-mono);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+  }
+
+  .role {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .role h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .when {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* Bug bounty: three facts side by side, the number carrying the weight. */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+    margin: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 1.75rem;
+  }
+
+  .fact {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    padding: 1.25rem;
+  }
+
+  .fact dt {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    line-height: 1.1;
+    color: var(--accent);
+  }
+
+  .fact dd {
+    margin: 0.45rem 0 0;
+    color: var(--muted);
+    font-size: 0.93rem;
+    line-height: 1.6;
+  }
+
+  .contribs {
+    margin: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .contribs dt {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.02rem;
+  }
+
+  .contribs dt a {
+    text-decoration: none;
+  }
+
+  .contribs dt a:hover {
+    text-decoration: underline;
+  }
+
+  .contribs dd {
+    margin: 0.15rem 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .writing {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+  }
+
+  .writing li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.2rem 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .writing li:first-child {
+    padding-top: 0;
+  }
+
+  .writing a {
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .writing a:hover {
+    color: var(--accent);
+  }
+
+  .contact {
+    font-size: 1.05rem;
+  }
+</style>

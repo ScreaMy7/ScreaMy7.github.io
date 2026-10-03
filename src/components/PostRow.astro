@@ -1,0 +1,148 @@
+---
+import Cover from './Cover.astro';
+import FormattedDate from './FormattedDate.astro';
+import { transitionName, tagSlug, SECTION_LABEL, type Item } from '../lib/content';
+
+interface Props {
+  item: Item;
+  /** 1-based position, shown as the row's index number. */
+  n: number;
+  showSection?: boolean;
+  delay?: number;
+}
+
+const { item, n, showSection = false, delay = 0 } = Astro.props;
+---
+
+<article class="row" data-reveal style={`--d: ${delay}`}>
+  <span class="n mono" aria-hidden="true">{String(n).padStart(2, '0')}</span>
+
+  <a class="thumb" href={item.href} tabindex="-1" aria-hidden="true">
+    <Cover
+      title={item.title}
+      tags={item.tags}
+      cover={item.cover}
+      coverAlt={item.coverAlt}
+      transition={transitionName(item.section, item.id)}
+    />
+  </a>
+
+  <div class="body">
+    <p class="meta mono">
+      <FormattedDate date={item.date} />
+      <span aria-hidden="true">·</span>
+      <span>{item.minutes} min</span>
+      {showSection && <><span aria-hidden="true">·</span><span>{SECTION_LABEL[item.section]}</span></>}
+    </p>
+    <h3><a href={item.href}>{item.title}</a></h3>
+    {item.description && <p class="desc">{item.description}</p>}
+    {
+      item.tags.length > 0 && (
+        <ul class="tags">
+          {item.tags.map((t) => (
+            <li>
+              <a class="tag" href={`/tags/${tagSlug(t)}/`}>
+                #{t}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0 1.25rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+    align-items: start;
+  }
+
+  .n {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding-top: 0.3rem;
+  }
+
+  .row:hover .n {
+    color: var(--accent);
+  }
+
+  .thumb {
+    display: none;
+  }
+
+  .body {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .meta {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+  }
+
+  h3 a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .row:hover h3 a {
+    color: var(--accent);
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.65;
+    max-width: 44rem;
+  }
+
+  .tags {
+    margin-top: 0.15rem;
+  }
+
+  /* Cover art earns its place once there's room for it beside the text. */
+  @media (min-width: 820px) {
+    .row {
+      grid-template-columns: 2.5rem 1fr 15rem;
+    }
+
+    .thumb {
+      display: block;
+      grid-column: 3;
+      grid-row: 1;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .thumb :global(.cover > *) {
+      transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .row:hover .thumb :global(.cover > *) {
+      transform: scale(1.06);
+    }
+  }
+</style>

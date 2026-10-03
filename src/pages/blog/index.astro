@@ -1,20 +1,20 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
+import PostRow from '../../components/PostRow.astro';
 import { getItems, tagSlug } from '../../lib/content';
 
 const items = await getItems('blog');
 const tags = [...new Set(items.flatMap((i) => i.tags))].sort();
-// Two-up grid: feature the newest post (full-width) only when the count is odd,
-// so the remaining posts always fill complete rows — no lonely trailing card.
-const featureFirst = items.length % 2 === 1;
+// Newest post leads with its full cover; everything else reads as an index.
+const [lead, ...rest] = items;
 ---
 
 <Base title="Blog" description="Posts on Android security, reverse engineering, fuzzing and bug bounty." wide>
   <header class="page-head">
     <p class="kicker" data-reveal>Blog</p>
     <h1 data-reveal style="--d: 1">Notes from the <span class="grad-text">lab</span></h1>
-    <p class="muted" data-reveal style="--d: 2">
+    <p class="lede" data-reveal style="--d: 2">
       Methodology, tooling and writeups from mobile security, reverse engineering and bug bounty.
     </p>
     {
@@ -36,36 +36,55 @@ const featureFirst = items.length % 2 === 1;
     items.length === 0 ? (
       <p class="empty">No posts yet.</p>
     ) : (
-      <div class="grid">
-        {items.map((item, i) => (
-          <PostCard item={item} featured={featureFirst && i === 0} delay={i % 2} />
-        ))}
-      </div>
+      <>
+        <div class="section-head" data-reveal>
+          <h2><span class="num" aria-hidden="true">01</span>Latest</h2>
+          <span class="count mono">{items.length} {items.length === 1 ? 'post' : 'posts'}</span>
+        </div>
+
+        <PostCard item={lead} featured />
+
+        {rest.length > 0 && (
+          <>
+            <div class="section-head" data-reveal>
+              <h2><span class="num" aria-hidden="true">02</span>Archive</h2>
+            </div>
+            <div class="rows">
+              {rest.map((item, i) => (
+                <PostRow item={item} n={i + 2} delay={i % 2} />
+              ))}
+            </div>
+          </>
+        )}
+      </>
     )
   }
 </Base>
 
 <style>
   .page-head {
-    max-width: 44rem;
-    margin-bottom: 3rem;
+    max-width: 46rem;
+    margin-bottom: 1rem;
   }
 
   .page-head h1 {
-    margin: 0.4rem 0 0.75rem;
+    margin: 0.4rem 0 0.9rem;
   }
 
-  .page-head .muted {
+  .lede {
     margin: 0 0 1.25rem;
+    color: var(--muted);
+    font-size: 1.1rem;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
-    gap: 1.25rem;
+  .count {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
 
-  .grid > :global(.featured) {
-    grid-column: 1 / -1;
+  .rows {
+    border-bottom: 1px solid var(--border);
   }
 </style>

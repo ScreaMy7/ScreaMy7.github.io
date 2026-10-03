@@ -64,7 +64,7 @@ function artSvg(title: string, tags: string[]) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_W}" height="${OG_H}" viewBox="0 0 ${COVER_W} ${COVER_H}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="hsl(${c.hue1} 55% 12%)"/><stop offset="1" stop-color="hsl(${c.hue2} 60% 7%)"/>
+      <stop offset="0" stop-color="hsl(${c.hue1} 28% 14%)"/><stop offset="1" stop-color="hsl(${c.hue2} 32% 9%)"/>
     </linearGradient>
     ${c.glows
       .map(
@@ -77,7 +77,7 @@ function artSvg(title: string, tags: string[]) {
       <stop offset="0" stop-color="${accent}"/><stop offset="1" stop-color="${accent2}"/>
     </linearGradient>
     <linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#0a0a0b" stop-opacity="0.92"/><stop offset="0.75" stop-color="#0a0a0b" stop-opacity="0.55"/><stop offset="1" stop-color="#0a0a0b" stop-opacity="0.2"/>
+      <stop offset="0" stop-color="#16191f" stop-opacity="0.92"/><stop offset="0.75" stop-color="#16191f" stop-opacity="0.55"/><stop offset="1" stop-color="#16191f" stop-opacity="0.2"/>
     </linearGradient>
   </defs>
   <rect width="${COVER_W}" height="${COVER_H}" fill="url(#bg)"/>
@@ -99,11 +99,11 @@ async function textSvg(title: string, kicker: string, label: string) {
   const size = title.length <= 45 ? 72 : title.length <= 80 ? 60 : 50;
   return satori(
     h('div', { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%', height: '100%', padding: '64px 72px' }, [
-      h('div', { display: 'flex', fontSize: 30, fontWeight: 500, color: '#35d46a', letterSpacing: 1 }, kicker),
-      h('div', { display: 'flex', fontSize: size, fontWeight: 700, color: '#ffffff', lineHeight: 1.12, maxWidth: 1000 }, title),
-      h('div', { display: 'flex', justifyContent: 'space-between', fontSize: 28, fontWeight: 500, color: 'rgba(255,255,255,0.75)' }, [
+      h('div', { display: 'flex', fontSize: 30, fontWeight: 500, color: '#ff8a4c', letterSpacing: 1 }, kicker),
+      h('div', { display: 'flex', fontSize: size, fontWeight: 700, color: '#f1ebd9', lineHeight: 1.12, maxWidth: 1000 }, title),
+      h('div', { display: 'flex', justifyContent: 'space-between', fontSize: 28, fontWeight: 500, color: 'rgba(241,235,217,0.75)' }, [
         h('div', { display: 'flex' }, new URL(SITE.url).host),
-        h('div', { display: 'flex', color: '#7ee787' }, label),
+        h('div', { display: 'flex', color: '#6ee7c7' }, label),
       ]),
     ]),
     { width: OG_W, height: OG_H, fonts: await loadFonts() }

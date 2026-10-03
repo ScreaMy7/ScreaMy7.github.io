@@ -2,11 +2,13 @@
 import Base from '../layouts/Base.astro';
 import PostCard from '../components/PostCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { getAllItems } from '../lib/content';
+import { getAllItems, getItems } from '../lib/content';
 import { projects } from '../data/projects';
 import { SITE, SOCIALS } from '../consts';
 
 const posts = (await getAllItems()).slice(0, 5);
+const blogCount = (await getItems('blog')).length;
+const noteCount = (await getItems('notes')).length;
 // Two-up grid: feature the newest post (full-width) only when the count is odd,
 // so the rest fill complete rows with no lonely trailing card.
 const featureFirst = posts.length % 2 === 1;
@@ -32,7 +34,35 @@ const jsonLd = {
     },
   ],
 };
-const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engineering', 'bug bounty'];
+// Grouped by how much of my week each one actually takes, not by self-grading.
+const focus = [
+  {
+    tier: 'Daily',
+    items: ['Android app assessment', 'Frida instrumentation', 'jadx + Ghidra', 'Burp Suite'],
+  },
+  {
+    tier: 'Deep work',
+    items: ['native .so reverse engineering', 'AFL++ / JNI fuzzing', 'Semgrep + Androguard rules'],
+  },
+  {
+    tier: 'Currently building',
+    items: ['LLM agents for pentest workflows', 'fuzzing pipelines', 'benchmarks'],
+  },
+];
+
+const recognition = [
+  { label: 'OWASP MASTG', detail: 'test cases on code security, SSL pinning, IPC and crypto flaws' },
+  { label: 'Hall of Fame', detail: 'Accenture, the United Nations, Palo Alto Networks' },
+  { label: 'H@cktivityCon 2021 CTF', detail: 'top 60 globally, web and mobile' },
+  { label: 'Nuclei Templates', detail: 'CVE detection templates for the community library' },
+];
+
+const next = [
+  { href: '/blog/', label: 'Blog', detail: 'Long-form writeups: methodology, reverse engineering, fuzzing', meta: `${blogCount} ${blogCount === 1 ? 'post' : 'posts'}` },
+  { href: '/notes/', label: 'Notes', detail: 'Short pieces on how I work — agents, tooling, workflow', meta: `${noteCount} ${noteCount === 1 ? 'note' : 'notes'}` },
+  { href: '/projects/', label: 'Projects', detail: 'Tools I maintain: soxtract, afl-android-emulator-kernel, CLI-MD', meta: `${projects.length} projects` },
+  { href: '/about/', label: 'About', detail: 'Background, work at Appknox, bug bounty record', meta: 'Who I am' },
+];
 ---
 
 <Base wide>
@@ -55,9 +85,6 @@ const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engin
         <a class="btn primary" href="/blog/">Read the blog <span aria-hidden="true">→</span></a>
         <a class="btn" href="/projects/">See projects</a>
       </div>
-      <ul class="chips" data-reveal style="--d: 4">
-        {focus.map((f) => <li>{f}</li>)}
-      </ul>
     </div>
   </section>
 
@@ -73,7 +100,7 @@ const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engin
   </ul>
 
   <div class="section-head" data-reveal>
-    <h2>Latest writing</h2>
+    <h2><span class="num mono" aria-hidden="true">01</span>Latest writing</h2>
     <a href="/blog/">All posts →</a>
   </div>
   {
@@ -89,12 +116,64 @@ const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engin
   }
 
   <div class="section-head" data-reveal>
-    <h2>Things I've built</h2>
+    <h2><span class="num mono" aria-hidden="true">02</span>Things I've built</h2>
     <a href="/projects/">All projects →</a>
   </div>
   <div class="grid">
     {featured.map((p, i) => <ProjectCard project={p} delay={i % 2} />)}
   </div>
+
+  <div class="section-head" data-reveal>
+    <h2><span class="num mono" aria-hidden="true">03</span>What I work on</h2>
+  </div>
+  <div class="split">
+    <div class="tiers" data-reveal>
+      {
+        focus.map((group) => (
+          <section class="tier">
+            <h3 class="mono">{group.tier}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+    <div class="recognition" data-reveal style="--d: 1">
+      <h3 class="mono">Recognition</h3>
+      <dl>
+        {
+          recognition.map((r) => (
+            <>
+              <dt>{r.label}</dt>
+              <dd>{r.detail}</dd>
+            </>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+
+  <div class="section-head" data-reveal>
+    <h2><span class="num mono" aria-hidden="true">04</span>Where to next</h2>
+  </div>
+  <ul class="next">
+    {
+      next.map((n, i) => (
+        <li class="fx-card" data-reveal style={`--d: ${i % 2}`}>
+          <a href={n.href}>
+            <span class="meta mono">{n.meta}</span>
+            <span class="label">
+              {n.label} <span aria-hidden="true">→</span>
+            </span>
+            <span class="detail">{n.detail}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
 </Base>
 
 <style>
@@ -140,7 +219,37 @@ const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engin
     margin-bottom: 2rem;
   }
 
-  .chips {
+  /* "What I work on": tiers on the left, recognition on the right. */
+  .split {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .tiers,
+  .recognition {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    padding: 1.5rem;
+  }
+
+  .tiers {
+    display: grid;
+    gap: 1.4rem;
+    align-content: start;
+  }
+
+  .tiers h3,
+  .recognition h3 {
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
+  .tier ul {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -149,14 +258,94 @@ const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engin
     padding: 0;
   }
 
-  .chips li {
-    font: 0.8rem var(--font-mono);
-    color: var(--muted);
+  .tier li {
+    font: 0.82rem var(--font-mono);
+    color: var(--fg);
     padding: 0.25rem 0.7rem;
     border: 1px solid var(--border);
     border-radius: 999px;
-    background: color-mix(in srgb, var(--bg-elev) 70%, transparent);
-    backdrop-filter: blur(6px);
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+  }
+
+  /* Later tiers read as lighter commitments than the first. */
+  .tier:not(:first-child) li {
+    color: var(--muted);
+    background: transparent;
+  }
+
+  .recognition dl {
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .recognition dt {
+    font-weight: 600;
+    font-size: 0.97rem;
+  }
+
+  .recognition dd {
+    margin: 0.1rem 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  /* "Where to next": the routing block for a first-time visitor. */
+  .next {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .next li {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+  }
+
+  .next a {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.25rem;
+    height: 100%;
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .next .meta {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .next .label {
+    font: 400 1.4rem var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  .next li:hover .label {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .next .detail {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  @media (min-width: 880px) {
+    .split {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: start;
+    }
   }
 
   .stats {
@@ -176,8 +365,9 @@ const focus = ['Android', 'Frida', 'native .so', 'AFL++ fuzzing', 'reverse engin
   }
 
   .value {
-    font: 700 2rem var(--font-head);
-    letter-spacing: -0.03em;
+    font: 400 2.6rem var(--font-display);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
   }
 
   .label {
