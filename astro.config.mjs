@@ -4,9 +4,9 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://screamy7.com',
-  // URLs are /blog/post/ (folder + index.html). Cloudflare Pages serves these with the slash
-  // and redirects /blog/post → /blog/post/, so links, canonicals and the sitemap all agree.
+  site: 'https://screamy7.github.io',
+  // URLs are /blog/post/ (folder + index.html). GitHub Pages serves these from the folder's
+  // index.html, so links, canonicals and the sitemap all agree on the trailing slash.
   trailingSlash: 'always',
   integrations: [sitemap()],
   markdown: {
