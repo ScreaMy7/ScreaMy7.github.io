@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://screamy7.com/sitemap-index.xml
+Sitemap: https://screamy7.github.io/sitemap-index.xml

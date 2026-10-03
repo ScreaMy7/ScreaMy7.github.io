@@ -5,7 +5,7 @@ export const SITE = {
   handle: 'ScreaMy7',
   description:
     'Security researcher focused on Android, native code and fuzzing. Research, writeups and tools by Aadarsh Anand (ScreaMy7).',
-  url: 'https://screamy7.com',
+  url: 'https://screamy7.github.io',
   email: 'zoroanandadarsh@gmail.com',
 };
 

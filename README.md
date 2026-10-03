@@ -1,6 +1,6 @@
 # screamy7.com
 
-Personal site: research, blog, notes and projects. Built with [Astro](https://astro.build), deployed on Cloudflare Pages.
+Personal site: research, blog, notes and projects. Built with [Astro](https://astro.build), deployed on GitHub Pages.
 
 ## Run locally
 
@@ -63,29 +63,13 @@ Research posts: only publish when the issue is fixed **and** the program/vendor 
 - Projects and contributions: `src/data/projects.ts`
 - About page: `src/pages/about.astro`
 - Colours and fonts: the tokens at the top of `src/styles/global.css`
-- Security headers (CSP etc.): `public/_headers`
 - `public/.well-known/security.txt`: bump `Expires` before it lapses (RFC 9116)
 
-## Deploy (Cloudflare Pages)
+## Deploy (GitHub Pages)
 
-1. Buy `screamy7.com` on Cloudflare Registrar (dash.cloudflare.com → Domain Registration).
-2. Push this folder to a GitHub repo.
-3. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick the repo.
-   - Framework preset: **Astro**
-   - Build command: `npm run build`
-   - Output directory: `dist`
-   - Environment variable: `NODE_VERSION` = `22` (or newer)
-4. *(Optional)* Email → Email Routing → forward an address like `hello@screamy7.com` to your inbox. If you switch to it, update `src/consts.ts` and `public/.well-known/security.txt`.
-5. Check the first deploy on its `*.pages.dev` URL: `curl -sI https://<project>.pages.dev/about` should 308 to `/about/`, and `/about/` should return 200 with the headers from `public/_headers`.
-6. Project → Custom domains → add `screamy7.com` (and `www.screamy7.com`, then redirect www → apex).
-7. Every push to `main` deploys; other branches get preview URLs.
+Every push to `main` on the `ScreaMy7/ScreaMy7.github.io` repo runs `.github/workflows/deploy.yml`, which builds with Node 22 and publishes to https://screamy7.github.io. Check runs with `gh run list -R ScreaMy7/ScreaMy7.github.io`.
 
-### After the domain is live
-
-- **DNSSEC:** DNS → Settings → enable.
-- **CAA:** add a CAA record restricting issuance to the CAs Cloudflare uses.
-- **Analytics (optional):** Cloudflare Web Analytics. Update the CSP in `public/_headers` as noted there.
-- **Old blog:** replace `ScreaMy7.github.io` with a redirect to `https://screamy7.com/`.
+GitHub Pages serves pages with `Cache-Control: max-age=600`, so a browser that already had the site open can show the old version for up to 10 minutes. Hard-refresh to check a deploy.
 
 ## TODO (style pass)
 
